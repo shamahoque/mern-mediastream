@@ -6,7 +6,11 @@ import fs from 'fs'
 
 //media streaming
 import mongoose from 'mongoose'
-import Grid from 'gridfs-stream'
+//import Grid from 'gridfs-stream'
+ /* Temporary fix for Mongoose v5+ and gridfs-stream v1.1.1 bug */
+const Grid = require('gridfs-stream');
+eval(`Grid.prototype.findOne = ${Grid.prototype.findOne.toString().replace('nextObject', 'next')}`);
+
 Grid.mongo = mongoose.mongo
 let gridfs = null
 mongoose.connection.on('connected', () => {
