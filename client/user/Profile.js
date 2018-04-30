@@ -8,16 +8,17 @@ import IconButton from 'material-ui/IconButton'
 import Button from 'material-ui/Button'
 import Typography from 'material-ui/Typography'
 import Edit from 'material-ui-icons/Edit'
-import Person from 'material-ui-icons/Person'
 import Divider from 'material-ui/Divider'
 import DeleteUser from './DeleteUser'
 import auth from './../auth/auth-helper'
 import {read} from './api-user.js'
 import {Redirect, Link} from 'react-router-dom'
+import {listByUser} from '../media/api-media.js'
+import MediaList from '../media/MediaList'
 
 const styles = theme => ({
   root: theme.mixins.gutters({
-    maxWidth: 600,
+    maxWidth: 850,
     margin: 'auto',
     padding: theme.spacing.unit * 3,
     marginTop: theme.spacing.unit * 5
@@ -25,6 +26,10 @@ const styles = theme => ({
   title: {
     margin: `${theme.spacing.unit * 3}px 0 ${theme.spacing.unit * 2}px`,
     color: theme.palette.protectedTitle
+  },
+  avatar: {
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.primary.light
   }
 })
 
@@ -33,7 +38,8 @@ class Profile extends Component {
     super()
     this.state = {
       user: '',
-      redirectToSignin: false
+      redirectToSignin: false,
+      media: []
     }
     this.match = match
   }
@@ -46,6 +52,13 @@ class Profile extends Component {
         this.setState({redirectToSignin: true})
       } else {
         this.setState({user: data})
+        listByUser({userId: data._id}).then((media) => {
+          if (media.error) {
+            console.log(media.error)
+          } else {
+            this.setState({media: media})
+          }
+        })
       }
     })
   }
@@ -69,12 +82,12 @@ class Profile extends Component {
         <List dense>
           <ListItem>
             <ListItemAvatar>
-              <Avatar>
-                <Person/>
+              <Avatar className={classes.avatar}>
+                {this.state.user.name && this.state.user.name[0]}
               </Avatar>
             </ListItemAvatar>
             <ListItemText primary={this.state.user.name} secondary={this.state.user.email}/> {
-             auth.isAuthenticated().user && auth.isAuthenticated().user._id == this.state.user._id && 
+             auth.isAuthenticated().user && auth.isAuthenticated().user._id == this.state.user._id &&
               (<ListItemSecondaryAction>
                 <Link to={"/user/edit/" + this.state.user._id}>
                   <IconButton aria-label="Edit" color="primary">
@@ -90,6 +103,7 @@ class Profile extends Component {
             <ListItemText primary={"Joined: " + (
               new Date(this.state.user.created)).toDateString()}/>
           </ListItem>
+          <MediaList media={this.state.media}/>
         </List>
       </Paper>
     )
