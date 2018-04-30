@@ -147,6 +147,29 @@ const incrementViews = (req, res, next) => {
       })
 }
 
+const update = (req, res, next) => {
+  let media = req.media
+  media = _.extend(media, req.body)
+  media.updated = Date.now()
+  media.save((err) => {
+    if (err) {
+      return res.status(400).send({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+    res.json(media)
+  })
+}
+
+const isPoster = (req, res, next) => {
+  let isPoster = req.media && req.auth && req.media.postedBy._id == req.auth._id
+  if(!isPoster){
+    return res.status('401').json({
+      error: "User is not authorized"
+    })
+  }
+  next()
+}
 export default {
   create,
   mediaByID,
@@ -154,5 +177,7 @@ export default {
   listPopular,
   listByUser,
   read,
-  incrementViews
+  incrementViews,
+  update,
+  isPoster
 }

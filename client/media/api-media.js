@@ -46,9 +46,26 @@ const read = (params) => {
   }).catch((err) => console.log(err))
 }
 
+const update = (params, credentials, media) => {
+  return fetch('/api/media/' + params.mediaId, {
+    method: 'PUT',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + credentials.t
+    },
+    body: JSON.stringify(media)
+  }).then((response) => {
+    return response.json()
+  }).catch((err) => {
+    console.log(err)
+  })
+}
+
 export {
   create,
   listPopular,
   listByUser,
-  read
+  read,
+  update
 }

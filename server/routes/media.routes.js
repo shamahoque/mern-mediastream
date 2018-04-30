@@ -19,7 +19,8 @@ router.route('/api/media/by/:userId')
 
 router.route('/api/media/:mediaId')
     .get( mediaCtrl.incrementViews, mediaCtrl.read)
-        
+    .put(authCtrl.requireSignin, mediaCtrl.isPoster, mediaCtrl.update)
+
 router.param('userId', userCtrl.userByID)
 router.param('mediaId', mediaCtrl.mediaByID)
 
