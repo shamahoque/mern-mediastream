@@ -19,7 +19,7 @@ import StaticRouter from 'react-router-dom/StaticRouter'
 import { SheetsRegistry } from 'react-jss/lib/jss'
 import JssProvider from 'react-jss/lib/JssProvider'
 import { MuiThemeProvider, createMuiTheme, createGenerateClassName } from 'material-ui/styles'
-import { red, brown } from 'material-ui/colors';
+import { red, brown } from 'material-ui/colors'
 //end
 
 //comment out before building for production
