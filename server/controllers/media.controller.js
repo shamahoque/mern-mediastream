@@ -131,10 +131,28 @@ const listByUser = (req, res) => {
   })
 }
 
+const read = (req, res) => {
+  return res.json(req.media)
+}
+
+const incrementViews = (req, res, next) => {
+  Media.findByIdAndUpdate(req.media._id, {$inc: {"views": 1}}, {new: true})
+      .exec((err, result) => {
+        if (err) {
+          return res.status(400).json({
+            error: errorHandler.getErrorMessage(err)
+          })
+        }
+        next()
+      })
+}
+
 export default {
   create,
   mediaByID,
   video,
   listPopular,
-  listByUser
+  listByUser,
+  read,
+  incrementViews
 }

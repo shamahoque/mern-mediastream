@@ -38,8 +38,17 @@ const listByUser = (params) => {
   }).catch((err) => console.log(err))
 }
 
+const read = (params) => {
+  return fetch('/api/media/' + params.mediaId, {
+    method: 'GET'
+  }).then((response) => {
+    return response.json()
+  }).catch((err) => console.log(err))
+}
+
 export {
   create,
   listPopular,
-  listByUser
+  listByUser,
+  read
 }
