@@ -117,9 +117,24 @@ const listPopular = (req, res) => {
   })
 }
 
+const listByUser = (req, res) => {
+  Media.find({postedBy: req.profile._id})
+  .populate('postedBy', '_id name')
+  .sort('-created')
+  .exec((err, posts) => {
+    if (err) {
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+    res.json(posts)
+  })
+}
+
 export default {
   create,
   mediaByID,
   video,
-  listPopular
+  listPopular,
+  listByUser
 }
