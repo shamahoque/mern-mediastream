@@ -10,6 +10,7 @@ import auth from './../auth/auth-helper'
 import {Link} from 'react-router-dom'
 import ReactPlayer from 'react-player'
 import Divider from 'material-ui/Divider'
+import DeleteMedia from './DeleteMedia'
 
 const styles = theme => ({
   card: {
@@ -64,6 +65,7 @@ class Media extends Component {
                           <Edit/>
                         </IconButton>
                       </Link>
+                      <DeleteMedia mediaId={this.props.media._id} mediaTitle={this.props.media.title}/>
                     </ListItemSecondaryAction>)
             }
           </ListItem>
