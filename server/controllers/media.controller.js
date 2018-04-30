@@ -170,6 +170,20 @@ const isPoster = (req, res, next) => {
   }
   next()
 }
+
+const remove = (req, res, next) => {
+  let media = req.media
+    media.remove((err, deletedMedia) => {
+      if (err) {
+        return res.status(400).json({
+          error: errorHandler.getErrorMessage(err)
+        })
+      }
+      gridfs.remove({ _id: req.media._id })
+      res.json(deletedMedia)
+    })
+}
+
 export default {
   create,
   mediaByID,
@@ -179,5 +193,6 @@ export default {
   read,
   incrementViews,
   update,
-  isPoster
+  isPoster,
+  remove
 }

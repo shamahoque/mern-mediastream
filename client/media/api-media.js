@@ -62,10 +62,26 @@ const update = (params, credentials, media) => {
   })
 }
 
+const remove = (params, credentials) => {
+  return fetch('/api/media/' + params.mediaId, {
+    method: 'DELETE',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + credentials.t
+    }
+  }).then((response) => {
+    return response.json()
+  }).catch((err) => {
+    console.log(err)
+  })
+}
+
 export {
   create,
   listPopular,
   listByUser,
   read,
-  update
+  update,
+  remove
 }
