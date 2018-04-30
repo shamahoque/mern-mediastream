@@ -99,8 +99,23 @@ const video = (req, res) => {
     })
 }
 
+const listPopular = (req, res) => {
+  Media.find({}).limit(9)
+  .populate('postedBy', '_id name')
+  .sort('-views')
+  .exec((err, posts) => {
+    if (err) {
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err)
+      })
+    }
+    res.json(posts)
+  })
+}
+
 export default {
   create,
   mediaByID,
-  video
+  video,
+  listPopular
 }

@@ -14,6 +14,19 @@ const create = (params, credentials, media) => {
   })
 }
 
+const listPopular = (params) => {
+  return fetch('/api/media/popular', {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }).then(response => {
+    return response.json()
+  }).catch((err) => console.log(err))
+}
+
 export {
-  create
+  create,
+  listPopular
 }

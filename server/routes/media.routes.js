@@ -11,6 +11,9 @@ router.route('/api/media/new/:userId')
 router.route('/api/media/video/:mediaId')
     .get(mediaCtrl.video)
 
+router.route('/api/media/popular')
+    .get(mediaCtrl.listPopular)
+
 router.param('userId', userCtrl.userByID)
 router.param('mediaId', mediaCtrl.mediaByID)
 
