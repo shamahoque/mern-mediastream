@@ -4,6 +4,7 @@ import Toolbar from 'material-ui/Toolbar'
 import Typography from 'material-ui/Typography'
 import IconButton from 'material-ui/IconButton'
 import HomeIcon from 'material-ui-icons/Home'
+import AddBoxIcon from 'material-ui-icons/AddBox'
 import Button from 'material-ui/Button'
 import auth from './../auth/auth-helper'
 import {Link, withRouter} from 'react-router-dom'
@@ -20,11 +21,14 @@ const Menu = withRouter(({history}) => (
       <Typography type="title" color="inherit">
         MERN Mediastream
       </Typography>
-      <Link to="/">
-        <IconButton aria-label="Home" style={isActive(history, "/")}>
-          <HomeIcon/>
-        </IconButton>
-      </Link>
+      <div>
+        <Link to="/">
+          <IconButton aria-label="Home" style={isActive(history, "/")}>
+            <HomeIcon/>
+          </IconButton>
+        </Link>
+      </div>
+      <div style={{'position':'absolute', 'right': '10px'}}><span style={{'float': 'right'}}>
       {
         !auth.isAuthenticated() && (<span>
           <Link to="/signup">
@@ -39,6 +43,11 @@ const Menu = withRouter(({history}) => (
       }
       {
         auth.isAuthenticated() && (<span>
+          <Link to="/media/new">
+            <Button style={isActive(history, "/media/new")}>
+              <AddBoxIcon style={{marginRight: '8px'}}/> Add Media
+            </Button>
+          </Link>
           <Link to={"/user/" + auth.isAuthenticated().user._id}>
             <Button style={isActive(history, "/user/" + auth.isAuthenticated().user._id)}>My Profile</Button>
           </Link>
@@ -47,6 +56,7 @@ const Menu = withRouter(({history}) => (
             }}>Sign out</Button>
         </span>)
       }
+      </span></div>
     </Toolbar>
   </AppBar>
 ))
