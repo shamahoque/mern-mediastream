@@ -10,7 +10,7 @@ import mongoose from 'mongoose'
  /* Temporary fix for Mongoose v5+ and gridfs-stream v1.1.1 bug */
 const Grid = require('gridfs-stream');
 eval(`Grid.prototype.findOne = ${Grid.prototype.findOne.toString().replace('nextObject', 'next')}`);
-
+/* Until gridfs-stream module is updated */
 Grid.mongo = mongoose.mongo
 let gridfs = null
 mongoose.connection.on('connected', () => {
@@ -70,13 +70,13 @@ const video = (req, res) => {
         }
 
         if (req.headers['range']) {
-            var parts = req.headers['range'].replace(/bytes=/, "").split("-")
-            var partialstart = parts[0]
-            var partialend = parts[1]
+            let parts = req.headers['range'].replace(/bytes=/, "").split("-")
+            let partialstart = parts[0]
+            let partialend = parts[1]
 
-            var start = parseInt(partialstart, 10)
-            var end = partialend ? parseInt(partialend, 10) : file.length - 1
-            var chunksize = (end - start) + 1
+            let start = parseInt(partialstart, 10)
+            let end = partialend ? parseInt(partialend, 10) : file.length - 1
+            let chunksize = (end - start) + 1
 
             res.writeHead(206, {
                 'Accept-Ranges': 'bytes',
