@@ -7,7 +7,7 @@ const config = {
     'mongodb://' + (process.env.IP || 'localhost') + ':' +
     (process.env.MONGO_PORT || '27017') +
     '/mernproject',
-  serverUrl: process.env.serverUrl || 'http://localhost:3000'
+  serverUrl: process.env.serverUrl || 'http://mediastream.mernbook.com'
 }
 
 export default config
