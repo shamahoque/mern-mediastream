@@ -95,7 +95,8 @@ class RelatedMedia extends Component {
 }
 
 RelatedMedia.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  media: PropTypes.array.isRequired
 }
 
 export default withStyles(styles)(RelatedMedia)
