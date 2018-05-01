@@ -74,6 +74,12 @@ class PlayMedia extends Component {
     }
   }
   render() {
+    //render SSR data
+    if (this.props.data && this.props.data[0] != null) {
+          this.state.media = this.props.data[0]
+          this.state.relatedMedia = []
+    }
+
     const nextUrl = this.state.relatedMedia.length > 0
           ? `/media/${this.state.relatedMedia[0]._id}` : ''
     const {classes} = this.props

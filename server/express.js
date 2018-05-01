@@ -22,6 +22,12 @@ import { MuiThemeProvider, createMuiTheme, createGenerateClassName } from 'mater
 import { red, brown } from 'material-ui/colors'
 //end
 
+//For SSR with data
+import { matchRoutes } from 'react-router-config'
+import routes from './../client/routeConfig'
+import 'isomorphic-fetch'
+//end
+
 //comment out before building for production
 import devBundle from './devBundle'
 
@@ -30,6 +36,17 @@ const app = express()
 
 //comment out before building for production
 devBundle.compile(app)
+
+//For SSR with data
+const loadBranchData = (location) => {
+  const branch = matchRoutes(routes, location)
+  const promises = branch.map(({ route, match }) => {
+    return route.loadData
+      ? route.loadData(branch[0].match.params)
+      : Promise.resolve(null)
+  })
+  return Promise.all(promises)
+}
 
 // parse body params and attache them to req.body
 app.use(bodyParser.json())
@@ -71,23 +88,27 @@ app.get('*', (req, res) => {
     })
    const generateClassName = createGenerateClassName()
    const context = {}
-   const markup = ReactDOMServer.renderToString(
-      <StaticRouter location={req.url} context={context}>
-         <JssProvider registry={sheetsRegistry} generateClassName={generateClassName}>
-            <MuiThemeProvider theme={theme} sheetsManager={new Map()}>
-              <MainRouter/>
-            </MuiThemeProvider>
-         </JssProvider>
-      </StaticRouter>
-     )
-    if (context.url) {
-      return res.redirect(303, context.url)
-    }
-    const css = sheetsRegistry.toString()
-    res.status(200).send(Template({
-      markup: markup,
-      css: css
-    }))
+   loadBranchData(req.url).then(data => {
+       const markup = ReactDOMServer.renderToString(
+         <StaticRouter location={req.url} context={context}>
+             <JssProvider registry={sheetsRegistry} generateClassName={generateClassName}>
+                <MuiThemeProvider theme={theme} sheetsManager={new Map()}>
+                  <MainRouter data={data}/>
+                </MuiThemeProvider>
+             </JssProvider>
+          </StaticRouter>
+        )
+       if (context.url) {
+        return res.redirect(303, context.url)
+       }
+       const css = sheetsRegistry.toString()
+       res.status(200).send(Template({
+          markup: markup,
+          css: css
+       }))
+   }).catch(err => {
+      res.status(500).send({"error": "Could not load React view with data"})
+  })
 })
 
 // Catch unauthorised errors

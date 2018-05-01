@@ -39,7 +39,7 @@ const listByUser = (params) => {
 }
 
 const read = (params) => {
-  return fetch('/api/media/' + params.mediaId, {
+  return fetch(config.serverUrl +'/api/media/' + params.mediaId, {
     method: 'GET'
   }).then((response) => {
     return response.json()
