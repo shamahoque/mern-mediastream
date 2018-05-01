@@ -11,6 +11,7 @@ import {Link} from 'react-router-dom'
 import ReactPlayer from 'react-player'
 import Divider from 'material-ui/Divider'
 import DeleteMedia from './DeleteMedia'
+import MediaPlayer from './MediaPlayer'
 
 const styles = theme => ({
   card: {
@@ -36,8 +37,8 @@ class Media extends Component {
     const mediaUrl = this.props.media._id
           ? `/api/media/video/${this.props.media._id}`
           : null
-    const {classes} = this.props
     const nextUrl = this.props.nextUrl
+    const {classes} = this.props
     return (
       <Card className={classes.card}>
         <CardHeader className={classes.header}
@@ -47,7 +48,7 @@ class Media extends Component {
             }
             subheader={this.props.media.genre}
         />
-        <ReactPlayer url={mediaUrl} width='100%' height='inherit' style={{maxHeight: '100%'}} controls/>
+        <MediaPlayer srcUrl={mediaUrl} nextUrl={nextUrl}/>
         <List dense>
           <ListItem>
             <ListItemAvatar>
@@ -80,7 +81,8 @@ class Media extends Component {
 
 Media.propTypes = {
   classes: PropTypes.object.isRequired,
-  media: PropTypes.object.isRequired
+  media: PropTypes.object,
+  nextUrl: PropTypes.string
 }
 
 export default withStyles(styles)(Media)

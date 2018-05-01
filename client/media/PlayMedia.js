@@ -49,12 +49,14 @@ class PlayMedia extends Component {
     this.loadMedia(props.match.params.mediaId, false)
   }
   render() {
+    const nextUrl = this.state.relatedMedia.length > 0
+          ? `/media/${this.state.relatedMedia[0]._id}` : ''
     const {classes} = this.props
     return (
       <div className={classes.root}>
         <Grid container spacing={24}>
           <Grid item xs={8} sm={8}>
-            <Media media={this.state.media}/>
+            <Media media={this.state.media} nextUrl={nextUrl}/>
           </Grid>
           {this.state.relatedMedia.length > 0
             && (<Grid item xs={4} sm={4}>
