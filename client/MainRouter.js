@@ -13,6 +13,10 @@ import PlayMedia from './media/PlayMedia'
 import EditMedia from './media/EditMedia'
 
 class MainRouter extends Component {
+  constructor({data}) {
+    super()
+      this.data = data
+  }
   // Removes the server-side injected CSS when React component mounts
   componentDidMount() {
     const jssStyles = document.getElementById('jss-server-side')
@@ -34,7 +38,9 @@ class MainRouter extends Component {
 
         <PrivateRoute path="/media/new" component={NewMedia}/>
         <PrivateRoute path="/media/edit/:mediaId" component={EditMedia}/>
-        <Route path="/media/:mediaId" component={PlayMedia}/>
+        <Route path="/media/:mediaId" render={(props) => (
+            <PlayMedia {...props} data={this.data} />
+        )} />
       </Switch>
     </div>)
   }
