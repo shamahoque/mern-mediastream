@@ -89,6 +89,8 @@ class MediaPlayer extends Component {
   onEnded = () => {
     if(this.state.loop){
       this.setState({ playing: true})
+    } else{
+      this.props.handleAutoplay(()=>{this.setState({ ended: true, playing: false })})
     }
   }
   onDuration = (duration) => {
@@ -192,7 +194,8 @@ class MediaPlayer extends Component {
 MediaPlayer.propTypes = {
   classes: PropTypes.object.isRequired,
   srcUrl: PropTypes.string,
-  nextUrl: PropTypes.string
+  nextUrl: PropTypes.string,
+  handleAutoplay: PropTypes.func.isRequired
 }
 
 export default withStyles(styles)(MediaPlayer)

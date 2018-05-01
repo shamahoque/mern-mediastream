@@ -48,7 +48,7 @@ class Media extends Component {
             }
             subheader={this.props.media.genre}
         />
-        <MediaPlayer srcUrl={mediaUrl} nextUrl={nextUrl}/>
+        <MediaPlayer srcUrl={mediaUrl} nextUrl={nextUrl} handleAutoplay={this.props.handleAutoplay}/>
         <List dense>
           <ListItem>
             <ListItemAvatar>
@@ -82,7 +82,8 @@ class Media extends Component {
 Media.propTypes = {
   classes: PropTypes.object.isRequired,
   media: PropTypes.object,
-  nextUrl: PropTypes.string
+  nextUrl: PropTypes.string,
+  handleAutoplay: PropTypes.func.isRequired
 }
 
 export default withStyles(styles)(Media)
