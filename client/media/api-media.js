@@ -77,11 +77,24 @@ const remove = (params, credentials) => {
   })
 }
 
+const listRelated = (params) => {
+  return fetch('/api/media/related/'+ params.mediaId, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }).then(response => {
+    return response.json()
+  }).catch((err) => console.log(err))
+}
+
 export {
   create,
   listPopular,
   listByUser,
   read,
   update,
-  remove
+  remove,
+  listRelated
 }
