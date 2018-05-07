@@ -187,6 +187,7 @@ const remove = (req, res, next) => {
 const listRelated = (req, res) => {
   Media.find({ "_id": { "$ne": req.media }, "genre": req.media.genre}).limit(4)
   .sort('-views')
+  .populate('postedBy', '_id name')
   .exec((err, posts) => {
     if (err) {
       return res.status(400).json({
