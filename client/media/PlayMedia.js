@@ -30,13 +30,12 @@ class PlayMedia extends Component {
     }
     this.match = match
   }
-  loadMedia = (mediaId, autoplay) => {
+  loadMedia = (mediaId) => {
     read({mediaId: mediaId}).then((data) => {
       if (data.error) {
         this.setState({error: data.error})
       } else {
         this.setState({media: data})
-        if(!autoplay){
           listRelated({
             mediaId: data._id}).then((data) => {
             if (data.error) {
@@ -45,32 +44,36 @@ class PlayMedia extends Component {
               this.setState({relatedMedia: data})
             }
           })
-        }
       }
     })
   }
   componentDidMount = () => {
-    this.loadMedia(this.match.params.mediaId, false)
+    this.loadMedia(this.match.params.mediaId)
   }
   componentWillReceiveProps = (props) => {
-    this.loadMedia(props.match.params.mediaId, false)
+    this.loadMedia(props.match.params.mediaId)
   }
   handleChange = (event) => {
    this.setState({ autoPlay: event.target.checked })
   }
   handleAutoplay = (updateMediaControls) => {
     let playList = this.state.relatedMedia
-    if(this.state.autoPlay && playList.length > 0 ){
-        let playMedia = playList[0]._id
-        if(playList.length > 1){
-          this.loadMedia(playMedia, true)
-          playList.shift()
-          this.setState({relatedMedia:playList})
-       }else{
-          this.loadMedia(playMedia, false)
-       }
+    let playMedia = playList[0]
+    if(!this.state.autoPlay || playList.length == 0 )
+      return updateMediaControls()
+
+    if(playList.length > 1){
+      playList.shift()
+      this.setState({media: playMedia, relatedMedia:playList})
     }else{
-       updateMediaControls()
+      listRelated({
+          mediaId: playMedia._id}).then((data) => {
+            if (data.error) {
+             console.log(data.error)
+            } else {
+             this.setState({media: playMedia, relatedMedia: data})
+            }
+         })
     }
   }
   render() {
