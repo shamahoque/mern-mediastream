@@ -164,7 +164,7 @@ const update = (req, res, next) => {
 const isPoster = (req, res, next) => {
   let isPoster = req.media && req.auth && req.media.postedBy._id == req.auth._id
   if(!isPoster){
-    return res.status('401').json({
+    return res.status('403').json({
       error: "User is not authorized"
     })
   }
@@ -187,6 +187,7 @@ const remove = (req, res, next) => {
 const listRelated = (req, res) => {
   Media.find({ "_id": { "$ne": req.media }, "genre": req.media.genre}).limit(4)
   .sort('-views')
+  .populate('postedBy', '_id name')
   .exec((err, posts) => {
     if (err) {
       return res.status(400).json({
