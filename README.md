@@ -1,6 +1,6 @@
 # MERN Mediastream
 
-A media streaming application with media upload and stream using MongoDB GridFS - developed using React, Node, Express and MongoDB. 
+A media streaming application with media upload and stream features - developed using React, Node, Express and MongoDB. 
 
 ![MERN Mediastream](https://s3.amazonaws.com/mernbook/git+/mediastream.png "MERN Mediastream")
 
