@@ -1,16 +1,15 @@
-import React, {Component} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import { findDOMNode } from 'react-dom'
 import screenfull from 'screenfull'
-import IconButton from 'material-ui/IconButton'
-import Icon from 'material-ui/Icon'
+import IconButton from '@material-ui/core/IconButton'
+import Icon from '@material-ui/core/Icon'
 import PropTypes from 'prop-types'
-import {withStyles} from 'material-ui/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
 import ReactPlayer from 'react-player'
-import { LinearProgress } from 'material-ui/Progress'
-import Input from 'material-ui/Input'
+import { LinearProgress } from '@material-ui/core/Progress'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   flex:{
     display:'flex'
   },
@@ -41,75 +40,82 @@ const styles = theme => ({
     textAlign: 'center',
     color: theme.palette.primary.light
   }
-})
+}))
 
-class MediaPlayer extends Component {
-  state = {
-        playing: true,
-        volume: 0.8,
-        muted: false,
-        played: 0,
-        loaded: 0,
-        duration: 0,
-        ended:false,
-        playbackRate: 1.0,
-        loop: false,
-        fullscreen: false,
-        videoError: false
-  }
-  componentDidMount = () => {
+export default function MediaPlayer(props) {
+  const classes = useStyles()
+  const [playing, setPlaying] = useState(true)
+  const [volume, setVolume] = useState(0.8)      
+  const [muted, setMuted] = useState(false)      
+  const [played, setPlayed] = useState(0)      
+  const [loaded, setLoaded] = useState(0)      
+  const [duration, setDuration] = useState(0)  
+  const [ended, setEnded] = useState(false)    
+  const [playbackRate, setPlaybackRate] = useState(1.0)     
+  const [loop, setLoop] = useState(false)      
+  const [fullscreen, setFullscreen] = useState(false)
+  const [videoError, setVideoError] = useState(false) 
+  const playerRef = useRef(null)
+  
+  useEffect(() => {
     if (screenfull.enabled) {
       screenfull.on('change', () => {
         let fullscreen = screenfull.isFullscreen ? true : false
-        this.setState({fullscreen: fullscreen})
+        setFullscreen(fullscreen)
+      })
+    }
+  }, [])
+  const changeVolume = e => {
+    setVolume(parseFloat(e.target.value))
+  }
+  const toggleMuted = () => {
+    setMuted(!muted)
+  }
+  const playPause = () => {
+    setPlaying(!playing)
+  }
+  const onLoop = () => {
+    setLoop(!loop)
+  }
+  const onProgress = progress => {
+    // We only want to update time slider if we are not currently seeking
+    if (!seeking) {
+      setPlayed(progress.played)
+      setLoaded(progress.loaded)
+      //setState({played: progress.played, loaded: progress.loaded})
+    }
+  }
+  const onClickFullscreen = () => {
+   screenfull.request(findDOMNode(playerRef))
+  }
+  const onEnded = () => {
+    if(loop){
+      setPlaying(true)
+    } else{
+      props.handleAutoplay(()=>{setEnded(true) 
+        setPlaying(false)
       })
     }
   }
-  setVolume = e => {
-    this.setState({ volume: parseFloat(e.target.value) })
+  const onDuration = (duration) => {
+    setDuration(duration)
   }
-  toggleMuted = () => {
-    this.setState({ muted: !this.state.muted })
+  const onSeekMouseDown = e => {
+    setSeeking(true)
   }
-  playPause = () => {
-     this.setState({ playing: !this.state.playing })
+  const onSeekChange = e => {
+    setPlayed(parseFloat(e.target.value))
+    setEnded(parseFloat(e.target.value) >= 1)
+    //setState({ played: parseFloat(e.target.value), ended: parseFloat(e.target.value) >= 1 })
   }
-  onLoop = () => {
-       this.setState({ loop: !this.state.loop })
+  const onSeekMouseUp = e => {
+    setSeeking(false)
+    player.seekTo(parseFloat(e.target.value))
   }
-  onProgress = progress => {
-    // We only want to update time slider if we are not currently seeking
-    if (!this.state.seeking) {
-      this.setState({played: progress.played, loaded: progress.loaded})
-    }
+  const ref = player => {
+      playerRef = player
   }
-  onClickFullscreen = () => {
-   screenfull.request(findDOMNode(this.player))
-  }
-  onEnded = () => {
-    if(this.state.loop){
-      this.setState({ playing: true})
-    } else{
-      this.props.handleAutoplay(()=>{this.setState({ ended: true, playing: false })})
-    }
-  }
-  onDuration = (duration) => {
-    this.setState({ duration })
-  }
-  onSeekMouseDown = e => {
-    this.setState({ seeking: true })
-  }
-  onSeekChange = e => {
-    this.setState({ played: parseFloat(e.target.value), ended: parseFloat(e.target.value) >= 1 })
-  }
-  onSeekMouseUp = e => {
-    this.setState({ seeking: false })
-    this.player.seekTo(parseFloat(e.target.value))
-  }
-  ref = player => {
-      this.player = player
-  }
-  format = (seconds) => {
+  const format = (seconds) => {
     const date = new Date(seconds * 1000)
     const hh = date.getUTCHours()
     let mm = date.getUTCMinutes()
@@ -120,82 +126,76 @@ class MediaPlayer extends Component {
     }
     return `${mm}:${ss}`
   }
-  videoError = e => {
-    this.setState({videoError: true})
+  const showVideoError = e => {
+    setVideoError(true)
   }
-  render() {
-    const {classes} = this.props
-    const { playing, ended, volume, muted, loop, played, loaded, duration, playbackRate, fullscreen, videoError } = this.state
-    return (<div>
-        <div className={classes.flex}>
-          {videoError && <p className={classes.videoError}>Video Error. Try again later.</p>}
-          <ReactPlayer
-            ref={this.ref}
-              width={fullscreen ? '100%':'inherit'}
-              height={fullscreen ? '100%':'inherit'}
-              style={fullscreen ? {position:'relative'} : {maxHeight: '500px'}}
-              config={{ attributes: { style: { height: '100%', width: '100%'} } }}
-              url={this.props.srcUrl}
-              playing={playing}
-              loop={loop}
-              playbackRate={playbackRate}
-              volume={volume}
-              muted={muted}
-              onEnded={this.onEnded}
-              onError={this.videoError}
-              onProgress={this.onProgress}
-              onDuration={this.onDuration}/>
-            <br/>
-        </div>
-        <div className={classes.controls}>
-          <LinearProgress color="primary" variant="buffer" value={played*100} valueBuffer={loaded*100} style={{width: '100%'}} classes={{
-                colorPrimary: classes.primaryColor,
-                dashedColorPrimary : classes.primaryDashed,
-                dashed: classes.dashed
-          }}/>
-          <input type="range" min={0} max={1}
-                  value={played} step='any'
-                  onMouseDown={this.onSeekMouseDown}
-                  onChange={this.onSeekChange}
-                  onMouseUp={this.onSeekMouseUp}
-                  className={classes.rangeRoot}/>
 
-          <IconButton color="primary" onClick={this.playPause}>
-            <Icon>{playing ? 'pause': (ended ? 'replay' : 'play_arrow')}</Icon>
-          </IconButton>
-          <IconButton disabled={!this.props.nextUrl} color="primary">
-            <Link to={this.props.nextUrl} style={{color: 'inherit'}}>
-              <Icon>skip_next</Icon>
-            </Link>
-          </IconButton>
-          <IconButton color="primary" onClick={this.toggleMuted}>
-            <Icon>{volume > 0 && !muted && 'volume_up' || muted && 'volume_off' || volume==0 && 'volume_mute'}</Icon>
-          </IconButton>
-          <input type="range" min={0} max={1} step='any' value={muted? 0 : volume} onChange={this.setVolume} style={{verticalAlign: 'middle'}}/>
-          <IconButton color={loop? 'primary' : 'default'} onClick={this.onLoop}>
-            <Icon>loop</Icon>
-          </IconButton>
-          <IconButton color="primary" onClick={this.onClickFullscreen}>
-            <Icon>fullscreen</Icon>
-          </IconButton>
-          <span style={{float: 'right', padding: '10px', color: '#b83423'}}>
-            <time dateTime={`P${Math.round(duration * played)}S`}>
-              {this.format(duration * played)}
-            </time> / <time dateTime={`P${Math.round(duration)}S`}>
-                          {this.format(duration)}
-                      </time>
-          </span>
-        </div>
+  return (<div>
+      <div className={classes.flex}>
+        {videoError && <p className={classes.videoError}>Video Error. Try again later.</p>}
+        <ReactPlayer
+          ref={ref}
+            width={fullscreen ? '100%':'inherit'}
+            height={fullscreen ? '100%':'inherit'}
+            style={fullscreen ? {position:'relative'} : {maxHeight: '500px'}}
+            config={{ attributes: { style: { height: '100%', width: '100%'} } }}
+            url={props.srcUrl}
+            playing={playing}
+            loop={loop}
+            playbackRate={playbackRate}
+            volume={volume}
+            muted={muted}
+            onEnded={onEnded}
+            onError={showVideoError}
+            onProgress={onProgress}
+            onDuration={onDuration}/>
+          <br/>
       </div>
-    )
-  }
+      <div className={classes.controls}>
+        <LinearProgress color="primary" variant="buffer" value={played*100} valueBuffer={loaded*100} style={{width: '100%'}} classes={{
+              colorPrimary: classes.primaryColor,
+              dashedColorPrimary : classes.primaryDashed,
+              dashed: classes.dashed
+        }}/>
+        <input type="range" min={0} max={1}
+                value={played} step='any'
+                onMouseDown={onSeekMouseDown}
+                onChange={onSeekChange}
+                onMouseUp={onSeekMouseUp}
+                className={classes.rangeRoot}/>
+
+        <IconButton color="primary" onClick={playPause}>
+          <Icon>{playing ? 'pause': (ended ? 'replay' : 'play_arrow')}</Icon>
+        </IconButton>
+        <IconButton disabled={!props.nextUrl} color="primary">
+          <Link to={props.nextUrl} style={{color: 'inherit'}}>
+            <Icon>skip_next</Icon>
+          </Link>
+        </IconButton>
+        <IconButton color="primary" onClick={toggleMuted}>
+          <Icon>{volume > 0 && !muted && 'volume_up' || muted && 'volume_off' || volume==0 && 'volume_mute'}</Icon>
+        </IconButton>
+        <input type="range" min={0} max={1} step='any' value={muted? 0 : volume} onChange={changeVolume} style={{verticalAlign: 'middle'}}/>
+        <IconButton color={loop? 'primary' : 'default'} onClick={onLoop}>
+          <Icon>loop</Icon>
+        </IconButton>
+        <IconButton color="primary" onClick={onClickFullscreen}>
+          <Icon>fullscreen</Icon>
+        </IconButton>
+        <span style={{float: 'right', padding: '10px', color: '#b83423'}}>
+          <time dateTime={`P${Math.round(duration * played)}S`}>
+            {format(duration * played)}
+          </time> / <time dateTime={`P${Math.round(duration)}S`}>
+                        {format(duration)}
+                    </time>
+        </span>
+      </div>
+    </div>
+  )
 }
 
 MediaPlayer.propTypes = {
-  classes: PropTypes.object.isRequired,
   srcUrl: PropTypes.string,
   nextUrl: PropTypes.string,
   handleAutoplay: PropTypes.func.isRequired
 }
-
-export default withStyles(styles)(MediaPlayer)

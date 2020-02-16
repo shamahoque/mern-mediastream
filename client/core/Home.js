@@ -1,55 +1,43 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import {withStyles} from 'material-ui/styles'
-import Card from 'material-ui/Card'
-import Typography from 'material-ui/Typography'
+import React, {useState, useEffect} from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import Card from '@material-ui/core/Card'
+import Typography from '@material-ui/core/Typography'
 import MediaList from '../media/MediaList'
 import {listPopular} from '../media/api-media.js'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   card: {
-    margin: `${theme.spacing.unit * 5}px 30px`
+    margin: `${theme.spacing(5)}px 30px`
   },
   title: {
-    padding:`${theme.spacing.unit * 3}px ${theme.spacing.unit * 2.5}px 0px`,
+    padding:`${theme.spacing(3)}px ${theme.spacing(2.5)}px 0px`,
     color: theme.palette.text.secondary,
     fontSize: '1em'
   },
   media: {
     minHeight: 330
   }
-})
+}))
 
-class Home extends Component {
-  state={
-    media: []
-  }
+export default function Home(){
+  const classes = useStyles()
+  const [media, setMedia] = useState([])
 
   componentDidMount = () => {
     listPopular().then((data) => {
       if (data.error) {
         console.log(data.error)
       } else {
-        this.setState({media: data})
+        setMedia(data)
       }
     })
   }
-
-  render() {
-    const {classes} = this.props
-    return (
+  return (
       <Card className={classes.card}>
-        <Typography type="headline" component="h2" className={classes.title}>
+        <Typography variant="headline" component="h2" className={classes.title}>
           Popular Videos
         </Typography>
-          <MediaList media={this.state.media}/>
+          <MediaList media={media}/>
       </Card>
-    )
-  }
+  )
 }
-
-Home.propTypes = {
-  classes: PropTypes.object.isRequired
-}
-
-export default withStyles(styles)(Home)

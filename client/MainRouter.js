@@ -12,21 +12,8 @@ import NewMedia from './media/NewMedia'
 import PlayMedia from './media/PlayMedia'
 import EditMedia from './media/EditMedia'
 
-class MainRouter extends Component {
-  constructor({data}) {
-    super()
-      this.data = data
-  }
-  // Removes the server-side injected CSS when React component mounts
-  componentDidMount() {
-    const jssStyles = document.getElementById('jss-server-side')
-    if (jssStyles && jssStyles.parentNode) {
-      jssStyles.parentNode.removeChild(jssStyles)
-    }
-  }
-
-  render() {
-    return (<div>
+const MainRouter = () => {
+  return (<div>
       <Menu/>
       <Switch>
         <Route exact path="/" component={Home}/>
@@ -43,7 +30,6 @@ class MainRouter extends Component {
         )} />
       </Switch>
     </div>)
-  }
 }
 
 export default MainRouter

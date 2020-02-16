@@ -1,20 +1,21 @@
-import React, {Component} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
-import {withStyles} from 'material-ui/styles'
-import Paper from 'material-ui/Paper'
-import Typography from 'material-ui/Typography'
+import {makeStyles} from '@material-ui/core/styles'
+import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
 import {Link} from 'react-router-dom'
-import Divider from 'material-ui/Divider'
-import Card, { CardContent } from 'material-ui/Card'
+import Divider from '@material-ui/core/Divider'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
 import ReactPlayer from 'react-player'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   root: theme.mixins.gutters({
     paddingBottom: 24,
     backgroundColor: '#80808024'
   }),
   title: {
-    margin: `${theme.spacing.unit * 3}px ${theme.spacing.unit}px ${theme.spacing.unit * 2}px`,
+    margin: `${theme.spacing(3)}px ${theme.spacing.unit}px ${theme.spacing(2)}px`,
     color: theme.palette.openTitle,
     fontSize: '1em'
   },
@@ -53,16 +54,15 @@ const styles = theme => ({
     paddingLeft: '8px',
     color: theme.palette.text.secondary
   }
-})
-class RelatedMedia extends Component {
-  render() {
-    const {classes} = this.props
+}))
+export default function RelatedMedia(props) {
+  const classes = useStyles();
     return (
       <Paper className={classes.root} elevation={4} style={{padding: '16px'}}>
           <Typography type="title" className={classes.title}>
             Up Next
           </Typography>
-          {this.props.media.map((item, i) => {
+          {props.media.map((item, i) => {
               return <span key={i}><Card className={classes.card} >
                 <div style={{marginRight: "5px", backgroundColor: "black"}}>
               <Link to={"/media/"+item._id}><ReactPlayer url={'/api/media/video/'+item._id} width='160px' height='140px'/></Link>
@@ -92,11 +92,7 @@ class RelatedMedia extends Component {
       </Paper>
     )
   }
-}
 
 RelatedMedia.propTypes = {
-  classes: PropTypes.object.isRequired,
   media: PropTypes.array.isRequired
 }
-
-export default withStyles(styles)(RelatedMedia)

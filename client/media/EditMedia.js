@@ -1,26 +1,26 @@
-import React, {Component} from 'react'
+import React, {useState, useEffect} from 'react'
+import Card from '@material-ui/core/Card'
+import CardActions from '@material-ui/core/CardActions'
+import CardContent from '@material-ui/core/CardContent'
+import Button from '@material-ui/core/Button'
+import TextField from '@material-ui/core/TextField'
+import Typography from '@material-ui/core/Typography'
+import Icon from '@material-ui/core/Icon'
+import { makeStyles } from '@material-ui/core/styles'
 import auth from './../auth/auth-helper'
-import Card, {CardActions, CardContent} from 'material-ui/Card'
-import Button from 'material-ui/Button'
-import TextField from 'material-ui/TextField'
-import Typography from 'material-ui/Typography'
-import FileUpload from 'material-ui-icons/FileUpload'
-import Icon from 'material-ui/Icon'
-import PropTypes from 'prop-types'
-import {withStyles} from 'material-ui/styles'
 import {read, update} from './api-media.js'
 import {Redirect} from 'react-router-dom'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   card: {
     maxWidth: 500,
     margin: 'auto',
     textAlign: 'center',
-    marginTop: theme.spacing.unit * 5,
-    paddingBottom: theme.spacing.unit * 2
+    marginTop: theme.spacing(5),
+    paddingBottom: theme.spacing(2)
   },
   title: {
-    margin: theme.spacing.unit * 2,
+    margin: theme.spacing(2),
     color: theme.palette.protectedTitle,
     fontSize: '1em'
   },
@@ -34,7 +34,7 @@ const styles = theme => ({
   },
   submit: {
     margin: 'auto',
-    marginBottom: theme.spacing.unit * 2
+    marginBottom: theme.spacing(2)
   },
   input: {
   display: 'none'
@@ -42,52 +42,53 @@ const styles = theme => ({
 filename:{
   marginLeft:'10px'
 }
-})
+}))
 
-class EditMedia extends Component {
-  constructor({match}) {
-    super()
-    this.state = {
-      media: {title: '', description:'', genre:''},
-      redirect: false,
-      error: '',
-    }
-    this.match = match
-  }
-  componentDidMount = () => {
-    read({mediaId: this.match.params.mediaId}).then((data) => {
+export default function EditProfile({ match }) {
+  const classes = useStyles()
+  const [media, setMedia] = useState({title: '', description:'', genre:''})
+  const [redirect, setRedirect] = useState(false)
+  const [error, setError] = useState('')
+  const jwt = auth.isAuthenticated()
+
+  useEffect(() => {
+    const abortController = new AbortController()
+    const signal = abortController.signal
+
+    read({mediaId: match.params.mediaId}).then((data) => {
       if (data.error) {
-        this.setState({error: data.error})
+        setError(data.error)
       } else {
-        this.setState({media: data})
+        setMedia(data)
       }
     })
-  }
+    return function cleanup(){
+      abortController.abort()
+    }
+  }, [match.params.mediaId])
 
-  clickSubmit = () => {
+  const clickSubmit = () => {
     const jwt = auth.isAuthenticated()
     update({
-      mediaId: this.state.media._id
+      mediaId: media._id
     }, {
       t: jwt.token
-    }, this.state.media).then((data) => {
+    }, media).then((data) => {
       if (data.error) {
-        this.setState({error: data.error})
+        setError(data.error)
       } else {
-        this.setState({error: '', redirect: true, media: data})
+        setRedirect(true)
       }
     })
   }
 
-  handleChange = name => event => {
-    let updatedMedia = this.state.media
+  const handleChange = name => event => {
+    let updatedMedia = media
     updatedMedia[name] = event.target.value
-    this.setState({media: updatedMedia})
+    setMedia(updatedMedia)
   }
-  render() {
-    const {classes} = this.props
-    if (this.state.redirect) {
-      return (<Redirect to={'/media/' + this.state.media._id}/>)
+    if (redirect) {
+      return (<Redirect to={'/media/' + media._id}/>)
     }
     return (
       <Card className={classes.card}>
@@ -95,36 +96,29 @@ class EditMedia extends Component {
           <Typography type="headline" component="h1" className={classes.title}>
             Edit Video Details
           </Typography>
-          <TextField id="title" label="Title" className={classes.textField} value={this.state.media.title} onChange={this.handleChange('title')} margin="normal"/><br/>
+          <TextField id="title" label="Title" className={classes.textField} value={media.title} onChange={handleChange('title')} margin="normal"/><br/>
           <TextField
             id="multiline-flexible"
             label="Description"
             multiline
             rows="2"
-            value={this.state.media.description}
-            onChange={this.handleChange('description')}
+            value={media.description}
+            onChange={handleChange('description')}
             className={classes.textField}
             margin="normal"
           /><br/>
-          <TextField id="genre" label="Genre" className={classes.textField} value={this.state.media.genre} onChange={this.handleChange('genre')} margin="normal"/><br/>
+          <TextField id="genre" label="Genre" className={classes.textField} value={media.genre} onChange={handleChange('genre')} margin="normal"/><br/>
           <br/> {
-                  this.state.error &&
+                  error &&
                   (<Typography component="p" color="error">
                     <Icon color="error" className={classes.error}>error</Icon>
-                    {this.state.error}
+                    {error}
                   </Typography>)
                 }
         </CardContent>
         <CardActions>
-          <Button color="primary" variant="raised" onClick={this.clickSubmit} className={classes.submit}>Submit</Button>
+          <Button color="primary" variant="contained" onClick={clickSubmit} className={classes.submit}>Submit</Button>
         </CardActions>
       </Card>
     )
   }
-}
-
-EditMedia.propTypes = {
-  classes: PropTypes.object.isRequired
-}
-
-export default withStyles(styles)(EditMedia)

@@ -1,69 +1,67 @@
-import React, {Component} from 'react'
+import React, {useState} from 'react'
 import PropTypes from 'prop-types'
-import IconButton from 'material-ui/IconButton'
-import Button from 'material-ui/Button'
-import DeleteIcon from 'material-ui-icons/Delete'
-import Dialog, {DialogActions, DialogContent, DialogContentText, DialogTitle} from 'material-ui/Dialog'
+import IconButton from '@material-ui/core/IconButton'
+import Button from '@material-ui/core/Button'
+import DeleteIcon from '@material-ui/icons/Delete'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
 import auth from './../auth/auth-helper'
 import {remove} from './api-media.js'
 import {Redirect} from 'react-router-dom'
 
-class DeleteMedia extends Component {
-  state = {
-    redirect: false,
-    open: false
+export default function DeleteMedia(props) {
+  const [open, setOpen] = useState(false)
+  
+  const jwt = auth.isAuthenticated()
+  const clickButton = () => {
+    setOpen(true)
   }
-  clickButton = () => {
-    this.setState({open: true})
-  }
-  deleteMedia = () => {
+  const deleteMedia = () => {
     const jwt = auth.isAuthenticated()
     remove({
-      mediaId: this.props.mediaId
+      mediaId: props.mediaId
     }, {t: jwt.token}).then((data) => {
       if (data.error) {
         console.log(data.error)
       } else {
-        this.setState({redirect: true})
+        setRedirect(true)
       }
     })
   }
   handleRequestClose = () => {
-    this.setState({open: false})
+    setOpen(false)
   }
-  render() {
-    const redirect = this.state.redirect
-    if (redirect) {
-      return <Redirect to='/'/>
-    }
-    return (<span>
-      <IconButton aria-label="Delete" onClick={this.clickButton} color="secondary">
-        <DeleteIcon/>
-      </IconButton>
+  if (redirect) {
+    return <Redirect to='/'/>
+  }
+  return (<span>
+    <IconButton aria-label="Delete" onClick={clickButton} color="secondary">
+      <DeleteIcon/>
+    </IconButton>
 
-      <Dialog open={this.state.open} onClose={this.handleRequestClose}>
-        <DialogTitle>{"Delete "+this.props.mediaTitle}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Confirm to delete {this.props.mediaTitle} from your account.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={this.handleRequestClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={this.deleteMedia} variant="raised" color="secondary" autoFocus="autoFocus">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </span>)
-  }
+    <Dialog open={open} onClose={handleRequestClose}>
+      <DialogTitle>{"Delete "+props.mediaTitle}</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Confirm to delete {props.mediaTitle} from your account.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleRequestClose} color="primary">
+          Cancel
+        </Button>
+        <Button onClick={deleteMedia} variant="raised" color="secondary" autoFocus="autoFocus">
+          Confirm
+        </Button>
+      </DialogActions>
+    </Dialog>
+  </span>)
 }
 
 DeleteMedia.propTypes = {
   mediaId: PropTypes.string.isRequired,
   mediaTitle: PropTypes.string.isRequired
 }
-
-export default DeleteMedia
