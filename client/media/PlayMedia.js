@@ -21,8 +21,9 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function PlayMedia(props) {
-  const [media, setMedia] = useState({postedBy: {}})
-  const [relatedMedia, setRelatedMedia] = useState([])
+  const classes = useStyles()
+  let [media, setMedia] = useState({postedBy: {}})
+  let [relatedMedia, setRelatedMedia] = useState([])
   const [autoPlay, setAutoPlay] = useState(false)
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function PlayMedia(props) {
     const signal = abortController.signal
 
     read({mediaId: props.match.params.mediaId}, signal).then((data) => {
-      if (data.error) {
+      if (data && data.error) {
         console.log(data.error)
       } else {
         setMedia(data)
@@ -85,7 +86,7 @@ export default function PlayMedia(props) {
          })
     }
   }
-    //render SSR data
+  //render SSR data
     if (props.data && props.data[0] != null) {
           media = props.data[0]
           relatedMedia = []
@@ -95,7 +96,7 @@ export default function PlayMedia(props) {
           ? `/media/${relatedMedia[0]._id}` : ''
     return (
       <div className={classes.root}>
-        <Grid container spacing={24}>
+        <Grid container spacing={8}>
           <Grid item xs={8} sm={8}>
             <Media media={media} nextUrl={nextUrl} handleAutoplay={handleAutoplay}/>
           </Grid>

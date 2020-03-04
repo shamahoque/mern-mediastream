@@ -14,6 +14,7 @@ import {Redirect} from 'react-router-dom'
 
 export default function DeleteMedia(props) {
   const [open, setOpen] = useState(false)
+  const [redirect, setRedirect] = useState(false)
   
   const jwt = auth.isAuthenticated()
   const clickButton = () => {
@@ -31,7 +32,7 @@ export default function DeleteMedia(props) {
       }
     })
   }
-  handleRequestClose = () => {
+  const handleRequestClose = () => {
     setOpen(false)
   }
   if (redirect) {
@@ -53,7 +54,7 @@ export default function DeleteMedia(props) {
         <Button onClick={handleRequestClose} color="primary">
           Cancel
         </Button>
-        <Button onClick={deleteMedia} variant="raised" color="secondary" autoFocus="autoFocus">
+        <Button onClick={deleteMedia} variant="contained" color="secondary" autoFocus="autoFocus">
           Confirm
         </Button>
       </DialogActions>

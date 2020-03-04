@@ -23,18 +23,23 @@ export default function Home(){
   const classes = useStyles()
   const [media, setMedia] = useState([])
 
-  componentDidMount = () => {
-    listPopular().then((data) => {
+  useEffect(() => {
+    const abortController = new AbortController()
+    const signal = abortController.signal
+    listPopular(signal).then((data) => {
       if (data.error) {
         console.log(data.error)
       } else {
         setMedia(data)
       }
     })
-  }
+    return function cleanup(){
+      abortController.abort()
+    }
+  }, [])
   return (
       <Card className={classes.card}>
-        <Typography variant="headline" component="h2" className={classes.title}>
+        <Typography variant="h2" className={classes.title}>
           Popular Videos
         </Typography>
           <MediaList media={media}/>

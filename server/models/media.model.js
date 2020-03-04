@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import crypto from 'crypto'
 const MediaSchema = new mongoose.Schema({
   title: {
     type: String,

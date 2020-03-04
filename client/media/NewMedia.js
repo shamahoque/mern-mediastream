@@ -6,7 +6,7 @@ import CardContent from '@material-ui/core/CardContent'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
-import FileUpload from '@material-ui/core/FileUpload'
+import FileUpload from '@material-ui/icons/AddToQueue'
 import Icon from '@material-ui/core/Icon'
 import {makeStyles} from '@material-ui/core/styles'
 import {create} from './api-media.js'
@@ -29,8 +29,8 @@ const useStyles = makeStyles(theme => ({
     verticalAlign: 'middle'
   },
   textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
     width: 300
   },
   submit: {
@@ -72,7 +72,7 @@ export default function NewMedia(){
       if (data.error) {
         setValues({...values, error: data.error})
       } else {
-        setValues({...values, error: '', mediaId: data._id})
+        setValues({...values, error: '', mediaId: data._id, redirect: true})
       }
     })
   }
@@ -81,11 +81,10 @@ export default function NewMedia(){
     const value = name === 'video'
       ? event.target.files[0]
       : event.target.value
-    //mediaData.set(name, value)
     setValues({...values, [name]: value })
   }
 
-    if (redirect) {
+    if (values.redirect) {
       return (<Redirect to={'/media/' + values.mediaId}/>)
     }
     return (
@@ -96,7 +95,7 @@ export default function NewMedia(){
           </Typography>
           <input accept="video/*" onChange={handleChange('video')} className={classes.input} id="icon-button-file" type="file" />
           <label htmlFor="icon-button-file">
-            <Button color="secondary" variant="raised" component="span">
+            <Button color="secondary" variant="contained" component="span">
               Upload
               <FileUpload/>
             </Button>
@@ -121,7 +120,7 @@ export default function NewMedia(){
                 }
         </CardContent>
         <CardActions>
-          <Button color="primary" variant="raised" onClick={clickSubmit} className={classes.submit}>Submit</Button>
+          <Button color="primary" variant="contained" onClick={clickSubmit} className={classes.submit}>Submit</Button>
         </CardActions>
       </Card>
     )

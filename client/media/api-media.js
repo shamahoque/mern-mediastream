@@ -15,10 +15,11 @@ const create = async (params, credentials, media) => {
   }
 }
 
-const listPopular = async (params) => {
+const listPopular = async (signal) => {
   try {
     let response = await fetch('/api/media/popular', {
     method: 'GET',
+    signal: signal,
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'

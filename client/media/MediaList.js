@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function MediaList() { 
+export default function MediaList(props) { 
   const classes = useStyles()
   return (
     <div className={classes.root}>

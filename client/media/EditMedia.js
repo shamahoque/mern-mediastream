@@ -28,8 +28,8 @@ const useStyles = makeStyles(theme => ({
     verticalAlign: 'middle'
   },
   textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
     width: 300
   },
   submit: {
@@ -83,7 +83,7 @@ export default function EditProfile({ match }) {
   }
 
   const handleChange = name => event => {
-    let updatedMedia = media
+    let updatedMedia = {...media}
     updatedMedia[name] = event.target.value
     setMedia(updatedMedia)
   }

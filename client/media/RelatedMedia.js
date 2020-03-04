@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: '#80808024'
   }),
   title: {
-    margin: `${theme.spacing(3)}px ${theme.spacing.unit}px ${theme.spacing(2)}px`,
+    margin: `${theme.spacing(3)}px ${theme.spacing(1)}px ${theme.spacing(2)}px`,
     color: theme.palette.openTitle,
     fontSize: '1em'
   },

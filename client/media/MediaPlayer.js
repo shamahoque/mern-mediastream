@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import {makeStyles} from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
 import ReactPlayer from 'react-player'
-import { LinearProgress } from '@material-ui/core/Progress'
+import LinearProgress from '@material-ui/core/LinearProgress'
 
 const useStyles = makeStyles(theme => ({
   flex:{
@@ -44,18 +44,22 @@ const useStyles = makeStyles(theme => ({
 
 export default function MediaPlayer(props) {
   const classes = useStyles()
-  const [playing, setPlaying] = useState(true)
+  const [playing, setPlaying] = useState(false)
   const [volume, setVolume] = useState(0.8)      
   const [muted, setMuted] = useState(false)      
-  const [played, setPlayed] = useState(0)      
-  const [loaded, setLoaded] = useState(0)      
+  //const [played, setPlayed] = useState(0)      
+  //const [loaded, setLoaded] = useState(0)      
   const [duration, setDuration] = useState(0)  
-  const [ended, setEnded] = useState(false)    
+  //const [ended, setEnded] = useState(false)  
+  const [seeking, setSeeking] = useState(false)    
   const [playbackRate, setPlaybackRate] = useState(1.0)     
   const [loop, setLoop] = useState(false)      
   const [fullscreen, setFullscreen] = useState(false)
   const [videoError, setVideoError] = useState(false) 
-  const playerRef = useRef(null)
+  let playerRef = useRef(null)
+  const [values, setValues] = useState({
+    played: 0, loaded: 0, ended: false
+  })
   
   useEffect(() => {
     if (screenfull.enabled) {
@@ -65,6 +69,9 @@ export default function MediaPlayer(props) {
       })
     }
   }, [])
+  useEffect(() => {
+    setVideoError(false)
+  }, [props.srcUrl])
   const changeVolume = e => {
     setVolume(parseFloat(e.target.value))
   }
@@ -80,8 +87,9 @@ export default function MediaPlayer(props) {
   const onProgress = progress => {
     // We only want to update time slider if we are not currently seeking
     if (!seeking) {
-      setPlayed(progress.played)
-      setLoaded(progress.loaded)
+      setValues({...values, played:progress.played, loaded: progress.loaded})
+      //setPlayed(progress.played)
+      //setLoaded(progress.loaded)
       //setState({played: progress.played, loaded: progress.loaded})
     }
   }
@@ -92,7 +100,8 @@ export default function MediaPlayer(props) {
     if(loop){
       setPlaying(true)
     } else{
-      props.handleAutoplay(()=>{setEnded(true) 
+      props.handleAutoplay(()=>{
+        setValues({...values, ended:true}) 
         setPlaying(false)
       })
     }
@@ -104,13 +113,14 @@ export default function MediaPlayer(props) {
     setSeeking(true)
   }
   const onSeekChange = e => {
-    setPlayed(parseFloat(e.target.value))
-    setEnded(parseFloat(e.target.value) >= 1)
+    setValues({...values, played:parseFloat(e.target.value), ended: parseFloat(e.target.value) >= 1})
+    //setPlayed(parseFloat(e.target.value))
+    //setEnded(parseFloat(e.target.value) >= 1)
     //setState({ played: parseFloat(e.target.value), ended: parseFloat(e.target.value) >= 1 })
   }
   const onSeekMouseUp = e => {
     setSeeking(false)
-    player.seekTo(parseFloat(e.target.value))
+    playerRef.seekTo(parseFloat(e.target.value))
   }
   const ref = player => {
       playerRef = player
@@ -127,12 +137,14 @@ export default function MediaPlayer(props) {
     return `${mm}:${ss}`
   }
   const showVideoError = e => {
+    console.log(e)
     setVideoError(true)
   }
 
   return (<div>
+    {videoError && <p className={classes.videoError}>Video Error. Try again later.</p>}
       <div className={classes.flex}>
-        {videoError && <p className={classes.videoError}>Video Error. Try again later.</p>}
+        
         <ReactPlayer
           ref={ref}
             width={fullscreen ? '100%':'inherit'}
@@ -152,20 +164,20 @@ export default function MediaPlayer(props) {
           <br/>
       </div>
       <div className={classes.controls}>
-        <LinearProgress color="primary" variant="buffer" value={played*100} valueBuffer={loaded*100} style={{width: '100%'}} classes={{
+        <LinearProgress color="primary" variant="buffer" value={values.played*100} valueBuffer={values.loaded*100} style={{width: '100%'}} classes={{
               colorPrimary: classes.primaryColor,
               dashedColorPrimary : classes.primaryDashed,
               dashed: classes.dashed
         }}/>
         <input type="range" min={0} max={1}
-                value={played} step='any'
+                value={values.played} step='any'
                 onMouseDown={onSeekMouseDown}
                 onChange={onSeekChange}
                 onMouseUp={onSeekMouseUp}
                 className={classes.rangeRoot}/>
 
         <IconButton color="primary" onClick={playPause}>
-          <Icon>{playing ? 'pause': (ended ? 'replay' : 'play_arrow')}</Icon>
+          <Icon>{playing ? 'pause': (values.ended ? 'replay' : 'play_arrow')}</Icon>
         </IconButton>
         <IconButton disabled={!props.nextUrl} color="primary">
           <Link to={props.nextUrl} style={{color: 'inherit'}}>
@@ -183,8 +195,8 @@ export default function MediaPlayer(props) {
           <Icon>fullscreen</Icon>
         </IconButton>
         <span style={{float: 'right', padding: '10px', color: '#b83423'}}>
-          <time dateTime={`P${Math.round(duration * played)}S`}>
-            {format(duration * played)}
+          <time dateTime={`P${Math.round(duration * values.played)}S`}>
+            {format(duration * values.played)}
           </time> / <time dateTime={`P${Math.round(duration)}S`}>
                         {format(duration)}
                     </time>

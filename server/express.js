@@ -23,7 +23,7 @@ import theme from './../client/theme'
 //For SSR with data
 import { matchRoutes } from 'react-router-config'
 import routes from './../client/routeConfig'
-//import 'isomorphic-fetch'
+import 'isomorphic-fetch'
 //end
 
 //comment out before building for production

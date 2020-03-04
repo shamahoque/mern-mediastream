@@ -16,6 +16,8 @@ import DeleteUser from './DeleteUser'
 import auth from './../auth/auth-helper'
 import {read} from './api-user.js'
 import {Redirect, Link} from 'react-router-dom'
+import {listByUser} from '../media/api-media.js'
+import MediaList from '../media/MediaList'
 
 const useStyles = makeStyles(theme => ({
   root: theme.mixins.gutters({
@@ -27,6 +29,10 @@ const useStyles = makeStyles(theme => ({
   title: {
     marginTop: theme.spacing(3),
     color: theme.palette.protectedTitle
+  },
+  avatar: {
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.primary.light
   }
 }))
 
@@ -35,6 +41,7 @@ export default function Profile({ match }) {
   const [user, setUser] = useState({})
   const [redirectToSignin, setRedirectToSignin] = useState(false)
   const jwt = auth.isAuthenticated()
+  const [media, setMedia] = useState([])
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -56,6 +63,26 @@ export default function Profile({ match }) {
 
   }, [match.params.userId])
   
+  useEffect(() => {
+    const abortController = new AbortController()
+    const signal = abortController.signal
+
+    listByUser({
+      userId: match.params.userId
+    }, {t: jwt.token}, signal).then((data) => {
+      if (data && data.error) {
+        setRedirectToSignin(true)
+      } else {
+        setMedia(data)
+      }
+    })
+
+    return function cleanup(){
+      abortController.abort()
+    }
+
+  }, [match.params.userId])
+
     if (redirectToSignin) {
       return <Redirect to='/signin'/>
     }
@@ -67,8 +94,8 @@ export default function Profile({ match }) {
         <List dense>
           <ListItem>
             <ListItemAvatar>
-              <Avatar>
-                <Person/>
+              <Avatar className={classes.avatar}>
+                {user.name && user.name[0]}
               </Avatar>
             </ListItemAvatar>
             <ListItemText primary={user.name} secondary={user.email}/> {
@@ -88,6 +115,7 @@ export default function Profile({ match }) {
             <ListItemText primary={"Joined: " + (
               new Date(user.created)).toDateString()}/>
           </ListItem>
+          <MediaList media={media}/>
         </List>
       </Paper>
     )
