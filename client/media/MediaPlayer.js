@@ -46,11 +46,8 @@ export default function MediaPlayer(props) {
   const classes = useStyles()
   const [playing, setPlaying] = useState(false)
   const [volume, setVolume] = useState(0.8)      
-  const [muted, setMuted] = useState(false)      
-  //const [played, setPlayed] = useState(0)      
-  //const [loaded, setLoaded] = useState(0)      
+  const [muted, setMuted] = useState(false)     
   const [duration, setDuration] = useState(0)  
-  //const [ended, setEnded] = useState(false)  
   const [seeking, setSeeking] = useState(false)    
   const [playbackRate, setPlaybackRate] = useState(1.0)     
   const [loop, setLoop] = useState(false)      
@@ -88,9 +85,6 @@ export default function MediaPlayer(props) {
     // We only want to update time slider if we are not currently seeking
     if (!seeking) {
       setValues({...values, played:progress.played, loaded: progress.loaded})
-      //setPlayed(progress.played)
-      //setLoaded(progress.loaded)
-      //setState({played: progress.played, loaded: progress.loaded})
     }
   }
   const onClickFullscreen = () => {
@@ -114,9 +108,6 @@ export default function MediaPlayer(props) {
   }
   const onSeekChange = e => {
     setValues({...values, played:parseFloat(e.target.value), ended: parseFloat(e.target.value) >= 1})
-    //setPlayed(parseFloat(e.target.value))
-    //setEnded(parseFloat(e.target.value) >= 1)
-    //setState({ played: parseFloat(e.target.value), ended: parseFloat(e.target.value) >= 1 })
   }
   const onSeekMouseUp = e => {
     setSeeking(false)

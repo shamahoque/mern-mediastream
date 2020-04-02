@@ -65,14 +65,14 @@ export default function PlayMedia(props) {
   const handleAutoplay = (updateMediaControls) => {
     let playList = relatedMedia
     let playMedia = playList[0]
+    console.log('autoplay'+autoPlay)
     if(!autoPlay || playList.length == 0 )
       return updateMediaControls()
-
+   
     if(playList.length > 1){
       playList.shift()
       setMedia(playMedia)
       setRelatedMedia(playList)
-      //setState({media: playMedia, relatedMedia:playList})
     }else{
       listRelated({
           mediaId: playMedia._id}).then((data) => {
@@ -81,7 +81,6 @@ export default function PlayMedia(props) {
             } else {
               setMedia(playMedia)
               setRelatedMedia(data)
-             //setState({media: playMedia, relatedMedia: data})
             }
          })
     }
