@@ -65,7 +65,6 @@ export default function PlayMedia(props) {
   const handleAutoplay = (updateMediaControls) => {
     let playList = relatedMedia
     let playMedia = playList[0]
-    console.log('autoplay'+autoPlay)
     if(!autoPlay || playList.length == 0 )
       return updateMediaControls()
    
