@@ -3,9 +3,9 @@
 ### [Live Demo](http://mediastream.mernbook.com/ "MERN Mediastream")
 
 #### What you need to run this code
-1. Node (8.11.1)
-2. NPM (5.8.0)
-3. MongoDB (3.6.3)
+1. Node (13.12.0)
+2. NPM (6.14.4)
+3. MongoDB (4.2.0)
 
 ####  How to run this code
 1. Clone this repository
