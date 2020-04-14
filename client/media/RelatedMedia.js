@@ -56,7 +56,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 export default function RelatedMedia(props) {
-  const classes = useStyles();
+  const classes = useStyles()
     return (
       <Paper className={classes.root} elevation={4} style={{padding: '16px'}}>
           <Typography type="title" className={classes.title}>
