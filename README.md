@@ -1,5 +1,6 @@
 # MERN Mediastream
-
+* [Get the updated second edition code here](https://github.com/shamahoque/mern-mediastream/tree/second-edition) 
+---
 A media streaming application with media upload and stream features - developed using React, Node, Express and MongoDB. 
 
 ![MERN Mediastream](https://s3.amazonaws.com/mernbook/git+/mediastream.png "MERN Mediastream")
