@@ -27,6 +27,9 @@ A media streaming application with media upload and stream features - developed 
 * [MERN Marketplace](https://github.com/shamahoque/mern-marketplace/tree/second-edition)
 * [MERN Expense Tracker](https://github.com/shamahoque/mern-expense-tracker)
 * [MERN VR Game](https://github.com/shamahoque/mern-vrgame/tree/second-edition)
+
+Learn more at [mernbook.com](http://www.mernbook.com/)
+
 ----
 ## Get the book
 #### [Full-Stack React Projects - Second Edition](https://www.packtpub.com/web-development/full-stack-react-projects-second-edition)
